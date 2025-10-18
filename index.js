@@ -49,7 +49,7 @@ app.post('/users', async (req, res) => {
     await client.sAdd(USERS_IDS_SET, String(id));
 
     const stored = await client.hGetAll(key);
-    res.status(201).json(stored);
+    return res.status(201).json(stored);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'internal_server_error' });
@@ -74,7 +74,7 @@ app.get('/users', async (req, res) => {
     for (const id of slice) pipeline.hGetAll(userKey(id));
     const users = await pipeline.exec();
     // pipeline.exec() returns array of results; but node-redis multi returns array of replies as-is
-    res.json({
+   return res.json({
       page,
       limit,
       total: allIds.length,
@@ -95,7 +95,7 @@ app.get('/users/:id', async (req, res) => {
     if (!exists) return res.status(404).json({ error: 'not_found' });
 
     const user = await client.hGetAll(key);
-    res.json(user);
+    return res.json(user);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'internal_server_error' });
@@ -120,7 +120,7 @@ app.put('/users/:id', async (req, res) => {
 
     await client.hSet(key, update);
     const user = await client.hGetAll(key);
-    res.json(user);
+    return res.json(user);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'internal_server_error' });
